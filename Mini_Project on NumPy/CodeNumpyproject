@@ -1,0 +1,70 @@
+import numpy as np
+import pandas as pd
+from math import sqrt
+
+# Project 1: Sensor Data
+
+def process_sensor_data(input_file, output_file):
+   
+    data = pd.read_csv(input_file)
+    
+   
+    stats = data.describe().loc[['mean','min','max']]
+   
+    max_temp_idx = data['temperature'].idxmax()
+    time_of_max_temp = data.loc[max_temp_idx, 'time']
+    
+ 
+    battery_below_30_count = (data['battery'] < 30).sum()
+    
+    results = {
+        "stats": stats,
+        "time_of_max_temp": time_of_max_temp,
+        "battery_below_30_count": int(battery_below_30_count)
+    }
+    with open(output_file, "w") as f:
+        f.write("Sensor Data Analysis\n\n")
+        f.write("Statistics:\n")
+        f.write(str(stats))
+        f.write("\n\nTime of Max Temperature: " + str(time_of_max_temp))
+        f.write("\nBattery Below 30% Count: " + str(battery_below_30_count))
+    return results
+
+# Project 2: Robot Path
+
+def process_robot_path(input_file, output_file):
+   
+    path = pd.read_csv(input_file)
+    coords = path[['x','y']].to_numpy()
+    
+   
+    diffs = np.diff(coords, axis=0)
+    distances = np.sqrt((diffs[:,0]**2) + (diffs[:,1]**2))
+    total_distance = distances.sum()
+    
+   
+    dists_from_origin = np.sqrt(coords[:,0]**2 + coords[:,1]**2)
+    farthest_idx = np.argmax(dists_from_origin)
+    farthest_point = tuple(coords[farthest_idx])
+    
+  
+    coords_set = set(map(tuple, coords))
+    revisited = len(coords_set) < len(coords)
+    
+    with open(output_file, "w") as f:
+        f.write("Robot Path Analysis\n\n")
+        f.write(f"Total Distance Traveled: {total_distance}\n")
+        f.write(f"Farthest Point from Origin: {farthest_point}\n")
+        f.write(f"Revisited Position: {revisited}\n")
+    
+    return {
+        "Total_Distance": total_distance,
+        "Farthest_Point": farthest_point,
+        "Revisited": revisited
+    }
+
+sensor_results = process_sensor_data("sensor_data.csv", "sensor_results.txt")
+robot_results = process_robot_path("robot_path.csv", "robot_results.txt")
+
+print("Sensor Data Results:", sensor_results)
+print("Robot Path Results:", robot_results)
