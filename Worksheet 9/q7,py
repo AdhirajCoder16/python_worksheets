@@ -1,0 +1,35 @@
+import tkinter as tk
+window = tk.Tk()
+window.title("Bouncing Ball Simulation")
+canvas = tk.Canvas(window, width=400, height=300, bg="white")
+canvas.pack()
+# Ball parameters
+RADIUS = 15
+x, y = 200, 150       # Starting coordinates
+vx, vy = 3, 2         # Velocity (x and y direction)
+
+def move_ball():
+    global x, y, vx, vy
+    # Update the ball's position
+    x += vx
+    y += vy
+
+    # Bounce off left and right walls
+    if x - RADIUS <= 0 or x + RADIUS >= 400:
+        vx = -vx
+    # Bounce off top and bottom walls
+    if y - RADIUS <= 0 or y + RADIUS >= 300:
+        vy = -vy
+
+    canvas.coords(ball, x - RADIUS, y - RADIUS, x + RADIUS, y + RADIUS)
+    window.after(15, move_ball)
+
+
+
+# Create the ball
+ball = canvas.create_oval(x - RADIUS, y - RADIUS, x + RADIUS, y + RADIUS, fill="red")
+
+move_ball()
+
+window.mainloop()
+
